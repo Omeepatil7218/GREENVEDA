@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order History - GreenVeda{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Cancel Confirmation Modal -->
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelOrderModalLabel">Confirm Cancellation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to cancel this order? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, Keep It</button>
+                    <button type="button" class="btn btn-danger" id="confirmCancelBtn">Yes, Cancel Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white border-bottom-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Your Order History</h3>
+                        <a href="{% url 'products' %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-shopping-bag"></i> Continue Shopping
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    {% if orders %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>#{{ order.id }}</td>
+                                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                    <td>{{ order.items.count }} item{{ order.items.count|pluralize }}</td>
+                                    <td>₹{{ order.total_price }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if order.status == 'completed' %}bg-success
+                                            {% elif order.status == 'processing' %}bg-info
+                                            {% elif order.status == 'cancelled' %}bg-danger
+                                            {% else %}bg-warning{% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-wrap" style="gap: 0.5rem;">
+                                            <a href="{% url 'order_detail' order.id %}" 
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="View Details">
+                                                <i class="fas fa-eye"></i> Details
+                                            </a>
+                                            {% if order.status|lower == 'pending' %}
+                                            <!-- Pending Payment -->
+                                            <span class="badge bg-warning">Pending Payment</span>
+                                            <button class="btn btn-sm btn-outline-danger cancel-order-btn"
+                                                    data-order-id="{{ order.id }}"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#cancelOrderModal">
+                                                <i class="fas fa-times-circle"></i> Cancel
+                                            </button>
+                                        
+                                        {% elif order.status|lower == 'processing' %}
+                                            <!-- Payment Confirmed, Processing Order -->
+                                            <span class="badge bg-info">Processing</span>
+                                            <button class="btn btn-sm btn-outline-danger cancel-order-btn"
+                                                    data-order-id="{{ order.id }}"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#cancelOrderModal">
+                                                <i class="fas fa-times-circle"></i> Cancel
+                                            </button>
+                                        
+                                        {% elif order.status|lower == 'completed' %}
+                                            <!-- Order Fulfilled -->
+                                            <span class="badge bg-success">Completed</span>
+                                        {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination remains the same -->
+                    {% if is_paginated %}
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mt-4">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                            
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                    
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-clipboard-list fa-4x text-muted"></i>
+                        </div>
+                        <h4 class="mb-3">No Orders Found</h4>
+                        <p class="text-muted mb-4">You haven't placed any orders yet.</p>
+                        <a href="{% url 'products' %}" class="btn btn-primary">
+                            <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table th {
+        font-weight: 600;
+        background-color: #f8f9fa;
+    }
+    
+    .badge {
+        font-size: 0.85em;
+        padding: 0.5em 0.75em;
+        min-width: 90px;
+    }
+    
+    .card {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .page-item.active .page-link {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+    
+    .page-link {
+        color: #28a745;
+    }
+    
+    /* Improved button styling */
+    td .btn {
+        white-space: nowrap;
+    }
+    
+    /* Make buttons in table cells wrap properly */
+    td .d-flex {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    /* Ensure buttons have consistent width */
+    .cancel-order-btn, .btn-outline-primary {
+        min-width: 100px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    /* Loading spinner for cancel button */
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+    }
+    .btn-loading:after {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        border: 2px solid transparent;
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: button-loading-spinner 1s linear infinite;
+    }
+    @keyframes button-loading-spinner {
+        from { transform: rotate(0turn); }
+        to { transform: rotate(1turn); }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Store the order ID when cancel button is clicked
+    let currentOrderId = null;
+    const cancelButtons = document.querySelectorAll('.cancel-order-btn');
+    
+    cancelButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentOrderId = this.getAttribute('data-order-id');
+        });
+    });
+    
+    // Handle the actual cancellation when confirmed
+    document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+        if (currentOrderId) {
+            const btn = this;
+            const originalText = btn.innerHTML;
+            
+            // Show loading state
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            btn.innerHTML = 'Processing...';
+            
+            // Send AJAX request to cancel the order
+            fetch(`/orders/${currentOrderId}/cancel/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Show success message and reload after a short delay
+                    btn.innerHTML = '<i class="fas fa-check"></i> Cancelled!';
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    throw new Error(data.message || 'Failed to cancel order');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btn.innerHTML = originalText;
+                btn.classList.remove('btn-loading');
+                btn.disabled = false;
+                alert(error.message || 'An error occurred while cancelling the order.');
+            });
+            
+            // Hide the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('cancelOrderModal'));
+            modal.hide();
+        }
+    });
+});
+</script>
+{% endblock %}

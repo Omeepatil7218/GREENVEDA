@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <p>{% blocktrans %}Enter rejection reason for {{ orders|length }} selected orders:{% endblocktrans %}</p>
+    {{ form.as_p }}
+    <div>
+        <input type="hidden" name="action" value="reject_orders" />
+        <input type="submit" name="apply" value="{% trans 'Reject Orders' %}" />
+        <a href="#" onclick="window.history.back(); return false;" class="button cancel-link">{% trans "Cancel" %}</a>
+    </div>
+</form>
+{% endblock %}

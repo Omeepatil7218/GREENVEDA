@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - GREENVEDA{% endblock %}
+
+{% block content %}
+<!-- About Section -->
+<div class="container">
+    <div class="row g-5 align-items-center">
+        <!-- Image Section -->
+        <div class="col-lg-6 wow fadeInLeft" data-wow-delay="0.1s">
+            <div class="about-img position-relative overflow-hidden rounded-3 shadow-lg" 
+                 style="transition: transform 0.5s ease; cursor: pointer;">
+                <img class="img-fluid w-100" src="{% static 'img/about5.webp' %}" alt="About Us Image">
+                <!-- Decorative overlay with hover effect -->
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" 
+                     style="background: rgba(0, 0, 0, 0.3); opacity: 0; transition: opacity 0.5s ease; color: white; font-weight: bold;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Section -->
+        <div class="col-lg-6 wow fadeInRight" data-wow-delay="0.5s">
+            <h1 class="display-5 text-primary mb-3">Best Organic Medicines & Plants</h1>
+            <p class="text-muted mb-4">
+                Discover the freshest, organic produce, sustainably grown with love. 
+                Our mission is to bring nature's best to your table.
+            </p>
+            <ul style="list-style-type: none; padding: 0;">
+                <li style="position: relative; padding-left: 25px; margin-bottom: 10px;">
+                  <span style="position: absolute; left: 0; top: 0; font-size: 18px; color: #28a745;">&#10003;</span>
+                  100% natural and chemical-free.
+                </li>
+                <li style="position: relative; padding-left: 25px; margin-bottom: 10px;">
+                  <span style="position: absolute; left: 0; top: 0; font-size: 18px; color: #28a745;">&#10003;</span>
+                  Supporting sustainable farming.
+                </li>
+                <li style="position: relative; padding-left: 25px; margin-bottom: 10px;">
+                  <span style="position: absolute; left: 0; top: 0; font-size: 18px; color: #28a745;">&#10003;</span>
+                  Healing with Ancient Ayurvedic Plants.
+                </li>
+                <li style="position: relative; padding-left: 25px; margin-bottom: 10px;">
+                  <span style="position: absolute; left: 0; top: 0; font-size: 18px; color: #28a745;">&#10003;</span>
+                  Natural Remedies for Balanced Wellness.
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Second About Section -->
+<div class="container-fluid py-5">
+    <div class="row">
+        <!-- Left Side: Text and List -->
+        <div class="col-lg-6 wow fadeInLeft" data-wow-delay="0.5s">
+            <h1 class="display-5 text-primary mb-3">Best Organic Medicines & Plants</h1>
+            <p class="text-muted mb-4">
+                Discover the freshest, organic produce, sustainably grown with love. 
+                Our mission is to bring nature's best to your table.
+            </p>
+            <ul style="list-style-type: none; padding: 0;">
+                <li style="position: relative; padding-left: 25px; margin-bottom: 10px;">
+                    <span style="position: absolute; left: 0; top: 0; font-size: 18px; color: #28a745;">&#10003;</span>
+                    Sustainably Grown, Holistically Healed: The Power of Ayurvedic Plants.                   
+                </li>
+                <li style="position: relative; padding-left: 25px; margin-bottom: 10px;">
+                    <span style="position: absolute; left: 0; top: 0; font-size: 18px; color: #28a745;">&#10003;</span>
+                    Nurturing the Earth, Healing the Body.                  
+                </li>
+                <li style="position: relative; padding-left: 25px; margin-bottom: 10px;">
+                    <span style="position: absolute; left: 0; top: 0; font-size: 18px; color: #28a745;">&#10003;</span>
+                    Balancing Wellness Through the Power of Ayurvedic Plants.                   
+                </li>
+                <li style="position: relative; padding-left: 25px; margin-bottom: 10px;">
+                    <span style="position: absolute; left: 0; top: 0; font-size: 18px; color: #28a745;">&#10003;</span>
+                    A Gateway to Natural Healing.
+                </li>
+                <li style="position: relative; padding-left: 25px; margin-bottom: 10px;">
+                    <span style="position: absolute; left: 0; top: 0; font-size: 18px; color: #28a745;">&#10003;</span>
+                    Ayurvedic Plants: The Timeless Path to Natural Wellness.
+                </li>
+            </ul>
+        </div>
+
+        <!-- Right Side: Image -->
+        <div class="col-lg-6 wow fadeInLeft" data-wow-delay="0.1s">
+            <div class="about-img position-relative overflow-hidden rounded-3 shadow-lg" 
+                 style="transition: transform 0.5s ease; cursor: pointer;">
+                <img class="img-fluid w-100" src="{% static 'img/about3.webp' %}" alt="About Us Image">
+                <!-- Decorative overlay with hover effect -->
+                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" 
+                     style="background: rgba(0, 0, 0, 0.3); opacity: 0; transition: opacity 0.5s ease; color: white; font-weight: bold;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container-fluid" style="background-color: #f8f9fa; margin: 50px 0; padding: 60px 0;">
+    <div class="container">
+        <!-- Section Header -->
+        <div class="section-header text-center mx-auto" style="max-width: 500px; margin-bottom: 50px;">
+            <h1 class="display-5" style="margin-bottom: 20px; font-weight: bold;">Our Features</h1>
+            <p style="color: #6c757d;">Discover the unique benefits we offer to enhance your experience.</p>
+        </div>
+
+        <!-- Features List -->
+        <div class="row">
+            {% for feature in features %}
+            <div class="col-lg-4 col-md-6 text-center" style="margin-bottom: 30px;">
+                <div class="feature-item" style="background-color: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); height: 100%; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                    <!-- Feature Image -->
+                    <div style="margin-bottom: 15px;">
+                        <img src="{{ feature.image.url }}" alt="{{ feature.title }}" style="max-height: 150px; border-radius: 8px; width: auto; height: auto;">
+                    </div>
+                    <!-- Feature Title -->
+                    <h4 style="margin-bottom: 15px; font-weight: 600; color: #343a40;">{{ feature.title }}</h4>
+                    <!-- Feature Description -->
+                    <p style="color: #6c757d; font-size: 14px;">{{ feature.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Add hover effects using JavaScript
+document.querySelectorAll('.about-img').forEach((img) => {
+    const overlay = img.querySelector('.position-absolute');
+    img.addEventListener('mouseover', () => {
+        img.style.transform = 'scale(1.05)';
+        overlay.style.opacity = '1';
+    });
+    img.addEventListener('mouseout', () => {
+        img.style.transform = 'scale(1)';
+        overlay.style.opacity = '0';
+    });
+});
+
+document.querySelectorAll('.btn-success').forEach((btn) => {
+    btn.addEventListener('mouseover', () => {
+        btn.style.backgroundColor = '#28a745';
+        btn.style.transform = 'translateY(-3px)';
+        btn.style.boxShadow = '0 8px 15px rgba(0, 128, 0, 0.2)';
+    });
+    btn.addEventListener('mouseout', () => {
+        btn.style.backgroundColor = '';
+        btn.style.transform = 'translateY(0)';
+        btn.style.boxShadow = '';
+    });
+});
+</script>
+{% endblock %}

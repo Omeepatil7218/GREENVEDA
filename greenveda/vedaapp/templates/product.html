@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}Our Products - GREENVEDA{% endblock %}
+
+{% block content %}
+<!-- Product Section Start -->
+<div class="col-lg-15">
+    <div class="product-section text-start mb-6 wow fadeInUp" data-wow-delay="0.1s">
+        <!-- Text Content -->
+        <div class="product-text">
+            <h1>Our Products</h1>
+            <p>
+                Our products are crafted with precision and care, using only the finest materials. 
+                From sleek design to exceptional performance, we strive to exceed your expectations.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Product Categories and Items --><div class="container-xxl py-5">
+    <div class="container">
+        <div class="row">
+            <!-- Categories Sidebar (Left Side) -->
+            <div class="col-lg-3 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Categories</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="?category_id=" 
+                           class="list-group-item list-group-item-action {% if not selected_category_id %}active{% endif %}">
+                            All  Products
+                        </a>
+                        {% for category in categories %}
+                            {% if category.catName.lower in "herbs shrubs plants herbal products" %}
+                            <a href="?category_id={{ category.catID }}" 
+                               class="list-group-item list-group-item-action {% if category.catID|stringformat:'s' == selected_category_id %}active{% endif %}">
+                                {{ category.catName }}
+                            </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Section -->
+            <div class="col-lg-9">
+                <div class="row">
+                    {% for product in products %}
+                        {% if product.category.catName.lower in "herbs shrubs plants herbal products" %}
+                        <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
+                            <div class="product-item card h-100 shadow-sm">
+                                <div class="position-relative bg-light overflow-hidden" style="height: 200px;">
+                                    <img class="img-fluid w-100 h-100" 
+                                         src="{% if product.image %}{{ product.image.url }}{% else %}/static/images/default.jpg{% endif %}" 
+                                         alt="{{ product.name }}" 
+                                         style="object-fit: cover;">
+                                    {% if product.is_new %}
+                                    <div class="bg-secondary rounded text-white position-absolute start-0 top-0 m-2 py-1 px-2 small">New</div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body text-center d-flex flex-column">
+                                    <h5 class="card-title">{{ product.name }}</h5>
+                                    <div class="mt-auto">
+                                        <span class="text-primary fw-bold me-1">₹{{ product.discount_price|default:product.price }}</span>
+                                        {% if product.discount_price %}
+                                        <span class="text-body text-decoration-line-through small">₹{{ product.price }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white border-top-0">
+                                    <div class="d-flex">
+                                        <form action="{% url 'add_to_cart' prod_id=product.id %}" method="post" class="w-50 pe-1">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-primary w-100">
+                                                <i class="fas fa-cart-plus"></i> Add
+                                            </button>
+                                        </form>
+                                        <a class="btn btn-sm btn-outline-secondary w-50 ms-1" 
+                                           href="{% url 'view' prod_id=product.id %}">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Category Sidebar Styles */
+    .card-header {
+        font-weight: 600;
+        border-radius: 0.35rem 0.35rem 0 0 !important;
+    }
+    
+    .list-group-item {
+        border-left: 0;
+        border-right: 0;
+        padding: 0.75rem 1.25rem;
+    }
+    
+    .list-group-item:first-child {
+        border-top: 0;
+    }
+    
+    .list-group-item.active {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+    }
+    
+    /* Product Card Styles */
+    .product-item {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .product-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .card-title {
+        font-size: 1rem;
+        font-weight: 500;
+        min-height: 2.5rem;
+    }
+</style>
+
+<style>
+    /* Product Section Styles */
+    .product-section {
+        display: flex;
+        align-items: center;
+        max-width: 100%;
+        padding: 40px;
+        background: linear-gradient(135deg, #2E5A8E, #4F84B6);
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        color: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    .product-text {
+        flex: 1;
+        padding-right: 20px;
+    }
+
+    .product-text h1 {
+        font-size: 36px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .product-text p {
+        font-size: 18px;
+        line-height: 1.6;
+        font-style: italic;
+        opacity: 0.9;
+        letter-spacing: 1px;
+    }
+
+    .product-section:hover {
+        transform: translateX(10px);
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(135deg, #4F84B6, #2E5A8E);
+    }
+
+    /* Product Item Styles */
+    .product-item {
+        height: 450px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .product-item img {
+        object-fit: cover;
+        height: 100%;
+    }
+
+    .product-item .text-center {
+        min-height: 120px;
+    }
+
+    .product-item .d-flex {
+        margin-top: auto;
+    }
+
+    /* Animation */
+    @keyframes slideInFromLeft {
+        0% {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .animate-product img {
+        animation: slideInFromLeft 0.8s ease-out forwards;
+    }
+
+    /* Category Filter Buttons */
+    .nav-pills .btn-outline-primary {
+        color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .nav-pills .btn-outline-primary.active {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .nav-pills .btn-outline-primary:hover {
+        background-color: rgba(13, 110, 253, 0.1);
+    }
+</style>
+{% endblock %}

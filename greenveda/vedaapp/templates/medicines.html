@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}Our Medicines - GREENVEDA{% endblock %}
+
+{% block content %}
+<!-- Medicine Section Start -->
+<div class="col-lg-15">
+    <div class="medicine-section text-start mb-6 wow fadeInUp" data-wow-delay="0.1s">
+        <!-- Text Content -->
+        <div class="medicine-text">
+            <h1>Our Medicines</h1>
+            <p>
+                Our medicines are crafted with precision and care, using only the finest ingredients. 
+                From advanced research to top-quality production, we ensure the best healthcare solutions.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="container mt-4">
+            <div class="row">
+                <!-- Categories Sidebar (Right Side) -->
+                <div class="col-md-3 ms-auto">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Categories</h5>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            <a href="{% url 'medicines' %}" class="list-group-item list-group-item-action active">
+                                All Medicines
+                            </a>
+                            {% for category in categories %}
+                                {% if category.catID %}
+                                    <a href="{% url 'category_products' category.catID %}" class="list-group-item list-group-item-action">
+                                        {{ category.catName }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Products Section -->
+                <div class="col-md-9">
+                    <div class="row">
+                        {% for product in products %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <!-- Product Image -->
+                                {% if product.image %}
+                                <img src="{{ product.image.url }}" class="card-img-top product-image slide-in" alt="{{ product.plantName }}">
+                                {% else %}
+                                <img src="/static/default-image.jpg" class="card-img-top product-image slide-in" alt="No Image Available">
+                                {% endif %}
+            
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">{{ product.plantName }}</h5>
+                                    <a class="d-block h5 mb-2" {{ product.prodID }}>{{ product.name }}</a>
+                                    <span class="text-primary me-1">{{ product.discount_price }}</span>
+                                    {% if product.discount_price %}
+                                    <span class="text-body text-decoration-line-through">₹{{ product.price }}</span>
+                                    {% else %}
+                                    <span>₹{{ product.price }}</span>
+                                    {% endif %}
+                                </div>
+            
+                                <!-- Buttons Section -->
+                                <div class="d-flex border-top">
+                                    <form action="{% url 'add_to_cart' prod_id=product.id %}" method="post" class="w-50 text-center border-end py-2">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-outline-primary py-2 px-3">
+                                            <i class="bi bi-cart"></i> Add to Cart
+                                        </button>
+                                    </form>
+            
+                                    <div class="w-50 text-center py-2">
+                                        <a class="btn btn-outline-success py-2 px-3" href="{% url 'view' prod_id=product.id %}">
+                                            <i class="bi bi-eye"></i> View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Medicine Section Styles */
+    .medicine-section {
+        display: flex;
+        align-items: center;
+        max-width: 100%;
+        padding: 40px;
+        background: linear-gradient(135deg, #1E3A5F, #3F6BA6);
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        color: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+
+    .medicine-text {
+        flex: 1;
+        padding-right: 20px;
+    }
+
+    .medicine-text h1 {
+        font-size: 36px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .medicine-text p {
+        font-size: 18px;
+        line-height: 1.6;
+        font-style: italic;
+        opacity: 0.9;
+        letter-spacing: 1px;
+    }
+
+    .medicine-section:hover {
+        transform: translateX(10px);
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(135deg, #3F6BA6, #1E3A5F);
+    }
+
+    /* Card Styles */
+    .card {
+        width: 100%;
+        border-radius: 10px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        font-size: 18px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .list-group-item {
+        text-align: center;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    /* Product Image Styles */
+    .card-img-top {
+        height: 220px;
+        object-fit: cover;
+        border-radius: 10px 10px 0 0;
+    }
+
+    /* Animation */
+    .slide-in {
+        transform: translateX(-50px);
+        opacity: 0;
+        animation: slideIn 0.5s ease-in-out forwards;
+        animation-delay: calc(0.1s * var(--animation-index));
+    }
+
+    @keyframes slideIn {
+        0% {
+            transform: translateX(-50px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    /* Button Styles */
+    .btn-outline-primary {
+        color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .btn-outline-success {
+        color: #198754;
+        border-color: #198754;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #198754;
+        color: white;
+    }
+</style>
+{% endblock %}

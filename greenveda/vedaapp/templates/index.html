@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - GREENVEDA{% endblock %}
+
+{% block content %}
+<!-- Enhanced Carousel Start -->
+<div class="container-fluid p-0 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div id="header-carousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <!-- First Slide -->
+            <div class="carousel-item active">
+                <div class="carousel-image-container">
+                    <img class="w-100" src="{% static 'img/back4.webp' %}" alt="Ayurveda Science" loading="lazy">
+                </div>
+                <div class="carousel-caption d-flex align-items-center justify-content-center">
+                    <div class="container">
+                        <div class="row justify-content-center text-center">
+                            <div class="col-lg-8">
+                                <h1 class="display-3 mb-4 animated slideInDown">AYURVEDA - The Science of Life</h1>
+                                <a href="/products" class="btn btn-primary btn-lg rounded-pill px-4 py-2">
+                                    Explore Products
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Second Slide -->
+            <div class="carousel-item">
+                <div class="carousel-image-container">
+                    <img class="w-100" src="{% static 'img/index.jpg' %}" alt="Ayurveda For Everyone" loading="lazy">
+                </div>
+                <div class="carousel-caption d-flex align-items-center justify-content-center">
+                    <div class="container">
+                        <div class="row justify-content-center text-center">
+                            <div class="col-lg-8">
+                                <h1 class="display-3 mb-4 animated slideInDown">Ayurveda for Everyone</h1>
+                                <a href="/products" class="btn btn-primary btn-lg rounded-pill px-4 py-2">
+                                    Shop Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#header-carousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+</div>
+<!-- Enhanced Carousel End -->
+
+<style>
+/* Carousel Container */
+#header-carousel {
+    height: 100vh;
+    overflow: hidden;
+    position: relative; /* Added relative positioning for proper image placement */
+}
+
+/* Image Container */
+.carousel-image-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Image Styling */
+.carousel-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    position: absolute;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust for image size to center perfectly */
+}
+
+/* Carousel Caption Styling */
+.carousel-caption {
+    background: rgba(0, 0, 0, 0.4); /* Added a semi-transparent background for better readability */
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 3rem 2rem;
+}
+
+/* Carousel Control Buttons */
+.carousel-control-prev,
+.carousel-control-next {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.8); /* Added a slightly transparent background for better visibility */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7; /* Reduced opacity for a softer look */
+    transition: opacity 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    opacity: 1; /* Increase opacity on hover */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.6); /* Added background color to control icons */
+    border-radius: 50%;
+    padding: 8px; /* Added padding to make the icon look better */
+}
+/* Caption Styling */
+.carousel-caption {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+/* Text Styling */
+.carousel-caption h1 {
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 1.5rem;
+}
+
+/* Button Styling */
+.carousel-caption .btn {
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-caption .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Navigation Controls */
+.carousel-control-prev,
+.carousel-control-next {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.carousel-control-prev { left: 30px; }
+.carousel-control-next { right: 30px; }
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .carousel-caption h1 {
+        font-size: 2.5rem;
+    }
+    
+    .carousel-control-prev,
+    .carousel-control-next {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 576px) {
+    .carousel-caption h1 {
+        font-size: 2rem;
+    }
+    
+    .carousel-caption .btn {
+        padding: 0.5rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+</style>
+
+<script>
+// Initialize carousel with smoother transitions
+document.addEventListener('DOMContentLoaded', function() {
+    const carousel = new bootstrap.Carousel('#header-carousel', {
+        interval: 5000,
+        pause: 'hover',
+        wrap: true
+    });
+    
+    // Ensure images are properly loaded
+    const carouselImages = document.querySelectorAll('.carousel-image-container img');
+    carouselImages.forEach(img => {
+        if (img.complete) {
+            img.style.opacity = '1';
+        } else {
+            img.addEventListener('load', function() {
+                this.style.opacity = '1';
+            });
+        }
+    });
+});
+</script>
+<!-- Custom JavaScript for Smooth Transitions -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const carouselItems = document.querySelectorAll("#header-carousel .carousel-item img");
+
+        carouselItems.forEach(item => {
+            item.style.transition = "transform 0.1s ease-in-out";
+        });
+
+        carouselItems.forEach(item => {
+            item.addEventListener("mouseover", () => {
+                item.style.transform = "scale(0.01)";
+            });
+
+            item.addEventListener("mouseout", () => {
+                item.style.transform = "scale(1)";
+            });
+        });
+    });
+
+    function filterByCategory(categoryId) {
+        const scrollPosition = window.scrollY;
+        fetch(`/filter-products/?category_id=${categoryId}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('product-list').innerHTML = html;
+                window.scrollTo(0, scrollPosition);
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
+
+<!-- About Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
+                <div class="about-img position-relative overflow-hidden p-5 pe-0">
+                    <img class="img-fluid w-100" src="{% static 'img/the-new-york-public-library-4l2UV8r4hxg-unsplash.jpg' %}">
+                </div>
+            </div>
+            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+                <h1 class="display-5 mb-4">Best Ayurvedic Products for Health and Wellness</h1>
+                <p class="mb-4">Our Ayurvedic products are carefully crafted to promote overall health, vitality, and balance. With ancient wisdom and modern care, we offer natural solutions for mind and body wellness.</p>
+                <p><i class="fa fa-check text-primary me-3"></i>Promoting natural healing with authentic Ayurvedic remedies</p>
+                <p><i class="fa fa-check text-primary me-3"></i>Using only pure, herbal ingredients for maximum benefit</p>
+                <p><i class="fa fa-check text-primary me-3"></i>Holistic products designed for mind-body harmony</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- About End -->
+
+<!-- Herbal Plants Section -->
+<div style="margin-top: 40px; padding: 20px; font-family: Arial, sans-serif;">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; transition: background-color 0.3s ease, transform 0.3s ease; border-radius: 15px; padding: 10px; overflow: hidden;"
+         onmouseover="this.style.backgroundColor='#F4F9F4'; this.querySelector('img').style.transform='scale(1.05)';"
+         onmouseout="this.style.backgroundColor='transparent'; this.querySelector('img').style.transform='scale(1)';">
+      <div style="flex: 1; padding: 10px;">
+        <img src="{% static 'img/tulsi.webp' %}" alt="Tulsi Plant" 
+          style="width: 100%; height: 300px; object-fit: cover; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); transition: transform 0.3s ease;">
+      </div>
+      <div style="flex: 1; padding: 10px;">
+        <h2 style="font-size: 28px; color: #2C5F2D; margin-bottom: 15px; border-bottom: 2px solid #A4C639; display: inline-block; padding-bottom: 5px;">Tulsi: The Holy Basil</h2>
+        <p style="font-size: 16px; line-height: 1.6; color: #555; margin-bottom: 20px;">
+          Tulsi, also known as Holy Basil, is a sacred plant in Ayurveda, an ancient Indian system of medicine.
+        </p>
+        <h4 style="font-size: 20px; color: #2C5F2D; font-weight: bold; margin-bottom: 10px;">Key Benefits:</h4>
+        <ul style="padding-left: 20px; list-style-type: disc; color: #333; line-height: 1.8; margin-bottom: 15px;">
+          <li style="margin-bottom: 10px;"><strong>Boosts Immunity:</strong> Rich in antioxidants and anti-inflammatory compounds</li>
+          <li style="margin-bottom: 10px;"><strong>Reduces Stress:</strong> Has adaptogenic properties</li>
+        </ul>
+      </div>
+    </div>
+</div>
+
+<!-- Repeat similar structure for other herbal plants (Aloe Vera, Neem, Ashwagandha, Triphala, Giloy) -->
+
+<!-- Feature Start -->
+<div class="container-fluid" style="background-color: #f8f9fa; margin: 50px 0; padding: 60px 0;">
+    <div class="container">
+        <div class="section-header text-center mx-auto" style="max-width: 500px; margin-bottom: 50px;">
+            <h1 class="display-5" style="margin-bottom: 20px; font-weight: bold;">Our Features</h1>
+            <p style="color: #6c757d;">Discover the unique benefits we offer to enhance your experience.</p>
+        </div>
+
+        <div class="row">
+            {% for feature in features %}
+            <div class="col-lg-4 col-md-6 text-center" style="margin-bottom: 30px;">
+                <div class="feature-item" style="background-color: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); height: 100%; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                    <div style="margin-bottom: 15px;">
+                        <img src="{{ feature.image.url }}" alt="{{ feature.title }}" style="max-height: 150px; border-radius: 8px; width: auto; height: auto;">
+                    </div>
+                    <h4 style="margin-bottom: 15px; font-weight: 600; color: #343a40;">{{ feature.title }}</h4>
+                    <p style="color: #6c757d; font-size: 14px;">{{ feature.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<!-- Feature End -->
+{% endblock %}

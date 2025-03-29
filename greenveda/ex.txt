@@ -1,0 +1,200 @@
+from itertools import product
+from unicodedata import category
+from wsgiref.validate import validator
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+from .models import CartMaster, CustomerMaster, PlantMaster, Feature, CategoryMaster
+
+# Home Page View
+# Displays all categories, products, and features
+
+def index(request):
+    categories = CategoryMaster.objects.all()
+    selected_category_id = request.GET.get('category_id', None)
+    
+    if selected_category_id:
+        products = PlantMaster.objects.filter(category__catID=selected_category_id)
+    else:
+        products = PlantMaster.objects.all()
+    
+    features = Feature.objects.all()
+    
+    return render(request, 'index.html', {
+        'products': products,
+        'features': features,
+        'categories': categories,
+        'active_menu': '/',
+        'selected_category_id': str(selected_category_id) if selected_category_id else None,
+    })
+
+# About Page View
+# Displays company features
+
+def about(request):
+    features = Feature.objects.all()
+    return render(request, 'about.html', {'features': features})
+
+# Contact Page View
+def contact(request):
+    return render(request, 'contact.html')
+
+# Blog Page View
+def blog(request):
+    return render(request, 'blog.html')
+
+# Feature Page View
+def feature(request):
+    return render(request, 'feature.html')
+
+# Testimonial Page View
+def testimonial(request):
+    return render(request, 'testimonial.html')
+
+# Product Filtering View (AJAX Request)
+def filter_products(request):
+    category_id = request.GET.get('category_id', None)
+    
+    if category_id:
+        products = PlantMaster.objects.filter(category__catID=category_id)
+    else:
+        products = PlantMaster.objects.all()
+    
+    html = render_to_string('index.html', {'products': products}, request=request)
+    return JsonResponse({'html': html})
+
+# Products Page View
+def products(request):
+    category_id = request.GET.get('category_id', None)
+    categories = CategoryMaster.objects.exclude(catName="medicines")  # Exclude medicines category
+    
+    if category_id:
+        products = PlantMaster.objects.filter(category__catID=category_id)
+    else:
+        products = PlantMaster.objects.all()
+    
+    products = products.exclude(category__catName="medicines")  # Exclude medicine products
+    
+    return render(request, 'product.html', {
+        'products': products,
+        'categories': categories,
+        'selected_category_id': category_id
+    })
+
+# View Products by Category
+def product_by_category(request, category_id):
+    category = get_object_or_404(CategoryMaster, id=category_id)
+    products = PlantMaster.objects.filter(category=category)
+    categories = CategoryMaster.objects.all()
+    
+    return render(request, 'product.html', {
+        'products': products,
+        'categories': categories,
+        'selected_category': category
+    })
+
+# Cart Page View
+def cart(request):
+    cart_items = CartMaster.objects.filter(user=request.user)
+    total_cost = sum(item.price * item.qty for item in cart_items)
+    
+    products = [{
+        'id': item.product.id,
+        'name': item.product.name,
+        'price': item.price,
+        'quantity': item.qty,
+        'total': item.price * item.qty,
+        'image': item.product.image.url if item.product.image else 'static/img/default-product.png',
+    } for item in cart_items]
+    
+    return render(request, 'cart.html', {'products': products, 'total_cost': total_cost})
+
+# Add to Cart View
+def add_to_cart(request, prod_id):
+    if request.user.is_authenticated:
+        product = get_object_or_404(PlantMaster, id=prod_id)
+        cart_item, created = CartMaster.objects.get_or_create(
+            user=request.user,
+            product=product,
+            defaults={'qty': 1, 'price': product.price, 'subtotal': product.price}
+        )
+        if not created:
+            cart_item.qty += 1
+            cart_item.subtotal = cart_item.qty * cart_item.price
+            cart_item.save()
+        return redirect('cart')
+    return redirect(f"{reverse('user_login')}?next={request.path}")
+
+# Increase Quantity of Cart Item
+def increase_quantity(request, product_id):
+    if request.method == 'POST':
+        cart_item = get_object_or_404(CartMaster, product_id=product_id, user=request.user)
+        cart_item.qty += 1
+        cart_item.subtotal = cart_item.qty * cart_item.product.price
+        cart_item.save()
+    return redirect('cart')
+
+# Decrease Quantity of Cart Item
+def decrease_quantity(request, product_id):
+    if request.method == 'POST':
+        cart_item = get_object_or_404(CartMaster, product_id=product_id, user=request.user)
+        if cart_item.qty > 1:
+            cart_item.qty -= 1
+            cart_item.subtotal = cart_item.qty * cart_item.product.price
+            cart_item.save()
+    return redirect('cart')
+
+# Remove Item from Cart
+def remove_from_cart(request, product_id):
+    if request.method == 'POST':
+        try:
+            cart_item = CartMaster.objects.get(product=product_id, user=request.user)
+            cart_item.delete()
+        except CartMaster.DoesNotExist:
+            pass
+    return redirect('cart')
+
+# Product Detail View
+def view(request, prod_id):
+    product = PlantMaster.objects.get(id=prod_id)
+    return render(request, 'view.html', {'product': product})
+
+# Customer Details Form Handling
+def customer_details(request):
+    last_three_addresses = CustomerMaster.objects.order_by('-customerID')[:3]
+    
+    if request.method == 'POST':
+        customer = CustomerMaster(
+            customerName=request.POST.get('customerName'),
+            email=request.POST.get('email'),
+            contact=request.POST.get('contact'),
+            address=request.POST.get('address'),
+            pincode=request.POST.get('pincode'),
+        )
+        customer.save()
+        
+        request.session.update({
+            'customername': customer.customerName,
+            'email': customer.email,
+            'contact': customer.contact,
+            'address': customer.address,
+            'pincode': customer.pincode,
+        })
+        return redirect('payment')
+    
+    return render(request, 'customer_details.html', {'last_three_addresses': last_three_addresses})
+
+# Payment Processing View
+def payment(request):
+    cart_items = CartMaster.objects.filter(user=request.user)
+    total_price = sum(item.subtotal for item in cart_items)
+    
+    if request.method == "POST":
+        payment_method = request.POST.get('payment_method')
+        if payment_method:
+            return HttpResponse(f"Redirecting to {payment_method} Payment Gateway... Total: ₹{total_price}")
+        return HttpResponse("Please select a payment method.")
+    
+    return render(request, 'payment.html', {'total_price': total_price, 'cart_items': cart_items})

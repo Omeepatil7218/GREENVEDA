@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AYRUVEDA</title>
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href=" static/css/style.css " rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous"> <link href="static/lib/flaticon/font/flaticon.css" rel="stylesheet">
+
+    
+</head>
+<body>
+
+
+<!-- Top Bar Start -->
+<div class="container-fluid fixed-top px-0" style="background-color: #f8f9fa; z-index: 1000; font-family: Arial, sans-serif; animation: fadeIn 1s ease;">
+    <div class="top-bar row gx-0 align-items-center d-none d-lg-flex" style="padding: 10px 0; color: #6c757d;">
+        <div class="col-lg-6 px-5 text-start">
+            <small style="font-size: 14px;">
+                <i class="fa fa-map-marker-alt me-2"></i>123 Street, New York, USA
+            </small>
+            <small class="ms-4" style="font-size: 14px;">
+                <i class="fa fa-envelope me-2"></i>info@example.com
+            </small>
+        </div>
+        <div class="col-lg-6 px-5 text-end">
+            <small style="font-size: 14px;">Follow us:</small>
+            <a class="text-body ms-3" href="" style="color: #6c757d; text-decoration: none;">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a class="text-body ms-3" href="" style="color: #6c757d; text-decoration: none;">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a class="text-body ms-3" href="" style="color: #6c757d; text-decoration: none;">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a class="text-body ms-3" href="" style="color: #6c757d; text-decoration: none;">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </div>
+    </div>
+</div>
+<!-- Top Bar End -->
+<!-- Navbar Start -->
+<nav class="navbar navbar-expand-lg bg-dark navbar-dark py-5" style="font-family: Arial, sans-serif; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+    <div class="container">
+        <a href="/" class="navbar-brand" style="text-decoration: none; color: #fff;">
+            <h1 class="fw-bold text-primary" style="margin: 0; font-size: 1.8rem;">
+                GREEN<span class="text-secondary" style="color: #ffc107;">VEDA</span>
+            </h1>
+        </a>
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" style="border: none; color: #fff;">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto py-0">
+                <a href="/" class="nav-item nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" style="font-size: 16px;">Home</a>
+                <a href="/about/" class="nav-item nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" style="font-size: 16px;">About</a>
+                <a href="/products/" class="nav-item nav-link {% if request.resolver_match.url_name == 'products' %}active{% endif %}" style="font-size: 16px;">Products</a>
+                <a href="/medicines/" class="nav-item nav-link {% if request.resolver_match.url_name == 'medicines' %}active{% endif %}" style="font-size: 16px;">Medicines</a>
+
+                {% if request.session.username %}
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        User
+                    </a>
+                    <div class="dropdown-menu m-0">
+                        <a href="" class="dropdown-item">{{ request.session.username }}</a>
+                        <a href="{% url 'customer_details' %}" class="dropdown-item">Edit Address</a>
+                        <a href="{% url 'change_password' %}" class="dropdown-item">Change Password</a>
+                        <a href="{% url 'logout' %}" class="dropdown-item">Logout</a>
+                    </div>
+                </div>
+                <a href="{% url 'cart' %}" class="nav-item nav-link position-relative">
+                    Cart
+                    {% if cart_count > 0 %}
+                        <span class="badge rounded-circle bg-danger position-absolute top-0 start-100 translate-middle" style="font-size: 0.75rem;">
+                            {{ cart_count }}
+                        </span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <a href="{% url 'user_login' %}" class="nav-item nav-link" style="font-size: 16px;">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- Navbar End -->
+
+<style>
+    /* Navbar link styles */
+    .navbar-nav .nav-link {
+        color: #ffc107 !important; /* Consistent button color */
+        background-color: transparent; /* No background by default */
+        border-radius: 5px; /* Rounded corners for uniformity */
+        padding: 8px 12px; /* Padding for a button-like appearance */
+        text-decoration: none;
+        transition: all 0.3s ease; /* Smooth hover effect */
+    }
+
+    /* Active button style */
+    .navbar-nav .nav-link.active {
+        background-color: #ffc107; /* Highlighted background */
+        color: #000 !important; /* Text color for contrast */
+        font-weight: bold; /* Emphasize the active link */
+    }
+
+    /* Hover effect */
+    .navbar-nav .nav-link:hover {
+        background-color: rgba(255, 193, 7, 0.8); /* Slightly lighter hover color */
+        color: #000 !important; /* Ensure visibility on hover */
+    }
+
+    /* Dropdown link styles */
+    .dropdown-menu .dropdown-item {
+        color: #000; /* Default color for dropdown items */
+        transition: all 0.3s ease; /* Smooth hover effect */
+    }
+
+    .dropdown-menu .dropdown-item:hover {
+        background-color: #ffc107; /* Highlight dropdown item on hover */
+        color: #000; /* Text color for contrast */
+    }
+</style>
+
+
+    <div class="container">
+        <div class="row mt-5">
+            <div class="col-md-4 mx-auto register-container">
+                <h2 class="text-center text-success mb-4"> Registration</h2>
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endif %}
+                {% if success %}
+                <div class="alert alert-success" role="alert">
+                    {{ success }}
+                </div>
+                {% endif %}
+                <form method="POST" id="registerForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="Input1" class="form-label"><strong>Username:</strong></label>
+                        <input type="email" class="form-control" name="uname" id="Input1" placeholder="Enter username" required maxlength="20">
+                        <div id="emailError" style="color: red;"></div>
+                    </div>
+                    <script>
+                        document.getElementById('Input1').addEventListener('input', function() {
+                            const emailInput = this.value;
+                            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$/i;
+                            const emailError = document.getElementById('emailError');
+                    
+                            if (emailInput.length > 20) {
+                                emailError.innerText = "Invalid email. Max 20 characters allowed.";
+                            } else if (!emailPattern.test(emailInput)) {
+                                emailError.innerText = "Invalid email format. Must end with @gmail.com";
+                            } else {
+                                emailError.innerText = "";
+                            }
+                        });
+                    </script>
+
+                    <div class="mb-3">
+                        <label for="Input2" class="form-label"><strong>Password:</strong></label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="upass" id="Input2" placeholder="Enter password" required maxlength="8">
+                            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="Input2">👁️</button>
+                        </div>
+                        <div id="password-strength" class="password-strength"></div>
+                        <ul class="password-conditions" style="display: none;">
+                            <li id="condition-length" class="invalid">
+                                <span class="check-icon">❌</span> Minimum 8 characters
+                            </li>
+                            <li id="condition-uppercase" class="invalid">
+                                <span class="check-icon">❌</span> At least one uppercase letter
+                            </li>
+                            <li id="condition-number" class="invalid">
+                                <span class="check-icon">❌</span> At least one number
+                            </li>
+                            <li id="condition-symbol" class="invalid">
+                                <span class="check-icon">❌</span> At least one symbol
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="Input3" class="form-label"><strong>Confirm Password:</strong></label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" name="ucpass" id="Input3" placeholder="Confirm password" required maxlength="8">
+                            <button type="button" class="btn btn-outline-secondary toggle-password" data-target="Input3">👁️</button>
+                        </div>
+                        <div id="password-match" class="password-match"></div>
+                    </div>
+                    <script>
+                        
+                        const passwordInput = document.getElementById("Input2");
+                        const confirmPasswordInput = document.getElementById("Input3");
+                        const strengthText = document.getElementById("password-strength");
+                        const passwordConditions = document.querySelector(".password-conditions");
+                        const matchText = document.getElementById("password-match");
+                        const registerBtn = document.getElementById("registerBtn");
+                    
+                        const conditionLength = document.getElementById("condition-length");
+                        const conditionUppercase = document.getElementById("condition-uppercase");
+                        const conditionNumber = document.getElementById("condition-number");
+                        const conditionSymbol = document.getElementById("condition-symbol");
+                    
+                        // Show conditions when clicking inside the password field
+                        passwordInput.addEventListener("focus", () => {
+                            passwordConditions.style.display = "block";
+                        });
+                    
+                        confirmPasswordInput.addEventListener("focus", () => {
+                            passwordConditions.style.display = "block";
+                        });
+                    
+                        passwordInput.addEventListener("blur", () => {
+                            if (!passwordInput.value) {
+                                passwordConditions.style.display = "none";
+                            }
+                        });
+                    
+                        confirmPasswordInput.addEventListener("blur", () => {
+                            if (!confirmPasswordInput.value) {
+                                passwordConditions.style.display = "none";
+                            }
+                        });
+                    
+                        passwordInput.addEventListener("input", validatePassword);
+                        confirmPasswordInput.addEventListener("input", validateMatch);
+                    
+                        function validatePassword() {
+                            const value = passwordInput.value;
+                    
+                            const hasMinLength = value.length >= 8;
+                            const hasUpperCase = /[A-Z]/.test(value);
+                            const hasNumber = /[0-9]/.test(value);
+                            const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+                    
+                            updateCondition(conditionLength, hasMinLength);
+                            updateCondition(conditionUppercase, hasUpperCase);
+                            updateCondition(conditionNumber, hasNumber);
+                            updateCondition(conditionSymbol, hasSymbol);
+                    
+                            let strength = "Weak";
+                            let color = "red";
+                    
+                            if (hasMinLength && hasUpperCase && hasNumber && hasSymbol) {
+                                strength = "Strong";
+                                color = "green";
+                            } else if ((hasMinLength && hasUpperCase) || (hasMinLength && hasNumber) || (hasMinLength && hasSymbol)) {
+                                strength = "Medium";
+                                color = "orange";
+                            }
+                    
+                            strengthText.textContent = `Strength: ${strength}`;
+                            strengthText.style.color = color;
+                    
+                            validateMatch();  // Check password match after updating strength
+                        }
+                    
+                        function updateCondition(element, isValid) {
+                            if (isValid) {
+                                element.classList.remove("invalid");
+                                element.classList.add("valid");
+                                element.querySelector(".check-icon").textContent = "✅";
+                            } else {
+                                element.classList.remove("valid");
+                                element.classList.add("invalid");
+                                element.querySelector(".check-icon").textContent = "❌";
+                            }
+                        }
+                    
+                        function validateMatch() {
+                            if (confirmPasswordInput.value === passwordInput.value && passwordInput.value !== "") {
+                                matchText.textContent = "✅ Passwords match";
+                                matchText.style.color = "green";
+                                registerBtn.disabled = false; // Enable button if passwords match
+                            } else {
+                                matchText.textContent = "❌ Passwords do not match";
+                                matchText.style.color = "red";
+                                registerBtn.disabled = true; // Disable button if passwords don't match
+                            }
+                        }
+                    
+                        // Show/hide password functionality
+                        document.querySelectorAll(".toggle-password").forEach(button => {
+                            button.addEventListener("click", function () {
+                                const target = document.getElementById(this.getAttribute("data-target"));
+                                if (target.type === "password") {
+                                    target.type = "text";
+                                    this.textContent = "🙈"; // Change icon when showing password
+                                } else {
+                                    target.type = "password";
+                                    this.textContent = "👁️"; // Change back to eye icon
+                                }
+                            });
+                        });
+                    </script>
+              <div class="d-grid mb-3">
+                <input type="submit" class="btn btn-success" value="Register">
+            </div>
+                    
+                    <div class="text-center mt-3">
+                        <p class="text-muted">Already a user? 
+                            <a href="{% url 'user_login' %}" style="text-decoration: underline;">Login</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<!-- Footer Start -->
+<div class="container-fluid bg-dark text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Logo and Social Media -->
+            <div class="col-lg-3 mb-4">
+                <!-- Brand Name with Ayurveda -->
+                <h1 class="fw-bold text-primary">
+                    <span class="rainbow-text">Ayurveda</span>
+                </h1>
+
+                <style>
+                    /* Style for rainbow-colored text */
+                    .rainbow-text {
+                        background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+                        -webkit-background-clip: text; /* Ensures the gradient is applied only to the text */
+                        -webkit-text-fill-color: transparent; /* Makes the text transparent so the gradient shows through */
+                        font-weight: bold; /* Makes the text bold */
+                        display: inline-block; /* Ensures the gradient spans the full text */
+                    }
+                </style>
+                <p>Your trusted partner for delicious meals.</p>
+                <div>
+                    <a class="btn btn-outline-light rounded-circle me-2" href="#"><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-outline-light rounded-circle me-2" href="#"><i class="fab fa-facebook"></i></a>
+                    <a class="btn btn-outline-light rounded-circle me-2" href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-3 mb-4">
+                <h4 class="text-white">Quick Links</h4>
+                <a class="text-white-50 d-block mb-2" href="/">Home</a>
+                <a class="text-white-50 d-block mb-2" href="/about/">About</a>
+                <a class="text-white-50 d-block mb-2" href="/products/">Products</a>
+                <a class="text-white-50 d-block" href="/contact/">Contact</a>
+            </div>
+
+            <!-- Tulsi Quote -->
+            <div class="col-lg-4 text-center">
+                <h3 class="text-white" id="tulsi">Tulsi</h3x>
+                <p class="fw-bold">
+                    “Tulsi purifies the air, boosts immunity, and symbolizes health and longevity.” <br>
+                    “A sacred herb with the power to heal the mind, body, and spirit.”
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer End -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src=" static/js/main.js"></script>
+</body>
+</html>

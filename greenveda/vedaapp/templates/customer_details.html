@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Customer Details - GreenVeda{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0 text-center">Customer Details</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Left Section: Previous Addresses (Hidden by default) -->
+                        <div class="col-md-12 mb-3">
+                            <button type="button" class="btn btn-outline-primary" id="showPreviousAddressesBtn">
+                                <i class="fas fa-address-book me-1"></i> Show Previous Addresses
+                            </button>
+                        </div>
+                        
+                        <div class="col-md-5" id="previousAddressesSection" style="display: none;">
+                            <h4 class="text-primary mb-4">Previous Addresses</h4>
+                            {% for customer in last_three_addresses %}
+                                <div class="address-card card mb-3 cursor-pointer"
+                                    onclick="fillCustomerDetails('{{ customer.customerName }}', '{{ customer.email }}', '{{ customer.contact }}', '{{ customer.address }}', '{{ customer.pincode }}')">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ customer.customerName }}</h5>
+                                        <p class="card-text mb-1"><i class="fas fa-envelope me-2"></i>{{ customer.email }}</p>
+                                        <p class="card-text mb-1"><i class="fas fa-phone me-2"></i>{{ customer.contact }}</p>
+                                        <p class="card-text mb-1"><i class="fas fa-map-marker-alt me-2"></i>{{ customer.address }}</p>
+                                        <p class="card-text"><i class="fas fa-map-pin me-2"></i>{{ customer.pincode }}</p>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="alert alert-info">No previous addresses found.</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Right Section: Customer Details Form -->
+                        <div class="col-md-12">
+                            <form method="post" action="{% url 'customer_details' %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="customerName" class="form-label">Name</label>
+                                    <input type="text" class="form-control" id="customerName" name="customerName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="contact" class="form-label">Contact Number</label>
+                                    <input type="text" class="form-control" id="contact" name="contact" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <div class="input-group mb-2">
+                                        <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                                        <button type="button" class="btn btn-outline-primary" id="getLocationBtn" style="border-radius: 0 0.25rem 0.25rem 0;">
+                                            <i class="fas fa-map-marker-alt me-1"></i> Use Current Location
+                                        </button>
+                                    </div>
+                                    <small class="text-muted">Click the button to auto-fill your current location</small>
+                                    <div id="locationStatus" class="mt-2 small"></div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="pincode" class="form-label">Pincode</label>
+                                    <input type="text" class="form-control" id="pincode" name="pincode" required>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'cart' %}" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i> Back to Cart
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-check me-1"></i> Submit Details
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to fill form with previous address
+    function fillCustomerDetails(name, email, contact, address, pincode) {
+        document.getElementById('customerName').value = name;
+        document.getElementById('email').value = email;
+        document.getElementById('contact').value = contact;
+        document.getElementById('address').value = address;
+        document.getElementById('pincode').value = pincode;
+        
+        // Hide the previous addresses section after selection
+        document.getElementById('previousAddressesSection').style.display = 'none';
+        document.getElementById('showPreviousAddressesBtn').innerHTML = '<i class="fas fa-address-book me-1"></i> Show Previous Addresses';
+    }
+
+    // Function to get current location
+    document.getElementById('getLocationBtn').addEventListener('click', function() {
+        const statusElement = document.getElementById('locationStatus');
+        statusElement.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Detecting your location...';
+        statusElement.className = 'mt-2 small text-info';
+        
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Success callback
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    
+                    // Use reverse geocoding to get address
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            let address = '';
+                            if (data.address) {
+                                const addr = data.address;
+                                address = [
+                                    addr.road ? addr.road : '',
+                                    addr.house_number ? addr.house_number : '',
+                                    addr.neighbourhood ? addr.neighbourhood : '',
+                                    addr.suburb ? addr.suburb : '',
+                                    addr.city ? addr.city : addr.town,
+                                    addr.state,
+                                    addr.country,
+                                    addr.postcode ? addr.postcode : ''
+                                ].filter(Boolean).join(', ');
+                                
+                                document.getElementById('address').value = address;
+                                if (addr.postcode) {
+                                    document.getElementById('pincode').value = addr.postcode;
+                                }
+                                
+                                statusElement.innerHTML = '<i class="fas fa-check-circle me-1"></i> Location detected successfully!';
+                                statusElement.className = 'mt-2 small text-success';
+                            } else {
+                                throw new Error('Address not found');
+                            }
+                        })
+                        .catch(error => {
+                            statusElement.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i> Could not retrieve address details. Please enter manually.';
+                            statusElement.className = 'mt-2 small text-danger';
+                            console.error('Geocoding error:', error);
+                        });
+                },
+                function(error) {
+                    // Error callback
+                    let errorMessage = 'Error retrieving your location: ';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage += "You denied the request for geolocation.";
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage += "Location information is unavailable.";
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage += "The request to get location timed out.";
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            errorMessage += "An unknown error occurred.";
+                            break;
+                    }
+                    statusElement.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i> ${errorMessage}`;
+                    statusElement.className = 'mt-2 small text-danger';
+                }
+            );
+        } else {
+            statusElement.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i> Geolocation is not supported by this browser.';
+            statusElement.className = 'mt-2 small text-danger';
+        }
+    });
+
+    // Toggle previous addresses visibility
+    document.getElementById('showPreviousAddressesBtn').addEventListener('click', function() {
+        const section = document.getElementById('previousAddressesSection');
+        if (section.style.display === 'none') {
+            section.style.display = 'block';
+            this.innerHTML = '<i class="fas fa-times me-1"></i> Hide Previous Addresses';
+        } else {
+            section.style.display = 'none';
+            this.innerHTML = '<i class="fas fa-address-book me-1"></i> Show Previous Addresses';
+        }
+    });
+</script>
+
+<style>
+    .address-card {
+        transition: all 0.3s ease;
+        border: 1px solid #dee2e6;
+    }
+    
+    .address-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-color: #0d6efd;
+    }
+    
+    .cursor-pointer {
+        cursor: pointer;
+    }
+    
+    #getLocationBtn, #showPreviousAddressesBtn {
+        white-space: nowrap;
+        transition: all 0.3s ease;
+    }
+    
+    #getLocationBtn:hover, #showPreviousAddressesBtn:hover {
+        background-color: #0d6efd;
+        color: white !important;
+    }
+    
+    .card-header {
+        padding: 1rem 1.5rem;
+    }
+    
+    #previousAddressesSection {
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}

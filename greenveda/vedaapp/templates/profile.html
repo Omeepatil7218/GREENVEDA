@@ -1,0 +1,793 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - GreenVeda{% endblock %}
+
+{% block content %}
+<style>
+    /* Profile Container */
+    .profile-container {
+        padding: 2rem 0;
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 120px);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .profile-wrapper {
+        display: flex;
+        flex-direction: column;
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    /* Sidebar Styles */
+    .profile-sidebar {
+        background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+        color: white;
+        padding: 2rem 1.5rem;
+        text-align: center;
+    }
+    
+    .profile-avatar-container {
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid rgba(52, 152, 219, 0.3);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .profile-avatar:hover {
+        transform: scale(1.05);
+        border-color: rgba(52, 152, 219, 0.7);
+    }
+    
+    .profile-username {
+        font-size: 1.4rem;
+        margin: 1rem 0;
+        color: white;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .profile-menu {
+        list-style: none;
+        padding: 0;
+        margin-top: 2rem;
+    }
+    
+    .profile-menu-item {
+        padding: 0.8rem 1.2rem;
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    
+    .profile-menu-item:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateX(5px);
+    }
+    
+    .profile-menu-item.active {
+        background: linear-gradient(to right, #3498db, #3cb0fd);
+        box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+    }
+    
+    .profile-menu-item i {
+        margin-right: 0.8rem;
+        font-size: 1.1rem;
+    }
+    
+    /* Profile Content Styles */
+    .profile-content {
+        padding: 2rem;
+        flex: 1;
+    }
+    
+    .profile-header {
+        margin-bottom: 2rem;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 1rem;
+    }
+    
+    .profile-title {
+        font-size: 1.8rem;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+    
+    .profile-subtitle {
+        color: #7f8c8d;
+        font-size: 0.95rem;
+        font-weight: 400;
+    }
+    
+    .profile-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .profile-form label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 0.95rem;
+    }
+    
+    .section-title {
+        font-size: 1.3rem;
+        color: #2c3e50;
+        margin: 1.5rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #eee;
+        font-weight: 600;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: flex-start;
+        gap: 0.8rem;
+        margin-top: 2rem;
+    }
+    
+    /* Form Input Styles */
+    .form-control {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+    
+    .form-control:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.15);
+    }
+    
+    .form-control[disabled] {
+        background-color: #f8f9fa;
+        opacity: 1;
+        cursor: not-allowed;
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    /* Button Styles */
+    .btn {
+        padding: 0.7rem 1.2rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn i {
+        margin-right: 0.5rem;
+    }
+    
+    .btn-primary {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+    
+    .btn-primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    }
+    
+    .btn-outline-primary {
+        color: #3498db;
+        border-color: #3498db;
+        background-color: transparent;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #3498db;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    }
+    
+    .btn-secondary {
+        background-color: #95a5a6;
+        border-color: #95a5a6;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #7f8c8d;
+        border-color: #7f8c8d;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(149, 165, 166, 0.3);
+    }
+    
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .modal-header {
+        border-bottom: 1px solid #eee;
+        padding: 1.2rem;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.3rem;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .btn-close {
+        background-size: 0.8rem;
+    }
+    
+    /* Alert Styles */
+    .alert-profile {
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 1rem 1.5rem;
+    }
+    
+    /* Validation Styles */
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+    
+    .invalid-feedback {
+        display: none;
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+    
+    /* Responsive Adjustments */
+    @media (min-width: 992px) {
+        .profile-wrapper {
+            flex-direction: row;
+        }
+        
+        .profile-sidebar {
+            width: 300px;
+            min-height: calc(100vh - 180px);
+        }
+        
+        .profile-content {
+            padding: 2.5rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .profile-container {
+            padding: 1rem;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+        }
+        
+        .profile-menu-item {
+            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .profile-content {
+            padding: 1.5rem;
+        }
+        
+        .profile-title {
+            font-size: 1.5rem;
+        }
+        
+        .form-actions {
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            margin-bottom: 0.5rem;
+        }
+    }
+    
+    /* Animation for form elements */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .profile-form .form-group {
+        animation: fadeIn 0.4s ease forwards;
+    }
+    
+    /* Delay animations for better visual flow */
+    .profile-form .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .profile-form .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .profile-form .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .profile-form .form-group:nth-child(4) { animation-delay: 0.4s; }
+</style>
+
+<div class="profile-container">
+    <div class="profile-wrapper">
+        <!-- Sidebar Menu -->
+        <div class="profile-sidebar">
+            <div class="profile-avatar-container">
+                {% if user.profile.avatar %}
+                    <img src="{{ user.profile.avatar.url }}?{% now 'U' %}" 
+                         class="profile-avatar" id="profile-avatar"
+                         alt="Profile picture of {{ user.get_full_name|default:user.username }}">
+                {% else %}
+                    <img src="{% static 'img/default-avatar.png' %}" 
+                         class="profile-avatar" id="profile-avatar"
+                         alt="Default profile picture">
+                {% endif %}
+                <h3 class="profile-username">{{ user.get_full_name|default:user.username }}</h3>
+                <button onclick="openModal()" class="btn btn-primary btn-sm">
+                    <i class="fas fa-camera me-1"></i> Update Profile Picture
+                </button>
+            </div>
+            <ul class="profile-menu">
+                <li class="profile-menu-item active"> 
+                    <i class="fas fa-user me-2"></i> My Profile
+                </li>
+              
+                <li class="profile-menu-item">
+                    <a href="{% url 'order_history' %}" class="text-decoration-none text-white">
+                        <i class="fas fa-shopping-bag me-2"></i> My Orders
+                    </a>
+                </li>
+                <li class="profile-menu-item">
+                    <a href="{% url 'change_password' %}" class="text-decoration-none text-white">
+                        <i class="fas fa-lock me-2"></i> Change Password
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <div class="profile-header">
+                <h2 class="profile-title">Personal Information</h2>
+                <p class="profile-subtitle">Manage and protect your account</p>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data" class="profile-form" id="profile-form">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" name="first_name" value="{{ user.first_name }}" class="form-control" id="first_name" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" name="last_name" value="{{ user.last_name }}" class="form-control" id="last_name" disabled>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" value="{{ user.email }}" readonly class="form-control bg-light">
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phone" value="{{ user.profile.phone|default:'' }}" class="form-control" id="phone" disabled>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select name="gender" class="form-control" id="gender" disabled>
+                                <option value="">Select Gender</option>
+                                <option value="Male" {% if user.profile.gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if user.profile.gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if user.profile.gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <input type="date" name="dob" value="{{ user.profile.dob|date:'Y-m-d' }}" class="form-control" id="dob" disabled>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Preferred Language</label>
+                    <select name="language" class="form-control" id="language" disabled>
+                        <option value="">Select Language</option>
+                        <option value="Hindi" {% if user.profile.language == 'Hindi' %}selected{% endif %}>Hindi</option>
+                        <option value="English" {% if user.profile.language == 'English' %}selected{% endif %}>English</option>
+                        <option value="Punjabi" {% if user.profile.language == 'Punjabi' %}selected{% endif %}>Punjabi</option>
+                        <option value="Bengali" {% if user.profile.language == 'Bengali' %}selected{% endif %}>Bengali</option>
+                        <option value="Tamil" {% if user.profile.language == 'Tamil' %}selected{% endif %}>Tamil</option>
+                        <option value="Telugu" {% if user.profile.language == 'Telugu' %}selected{% endif %}>Telugu</option>
+                        <option value="Marathi" {% if user.profile.language == 'Marathi' %}selected{% endif %}>Marathi</option>
+                        <option value="Gujarati" {% if user.profile.language == 'Gujarati' %}selected{% endif %}>Gujarati</option>
+                    </select>
+                </div>
+                
+                <h4 class="section-title mt-4">Address Information</h4>
+                
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" name="address" value="{{ user.profile.address|default:'' }}" class="form-control" id="address" disabled>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" name="city" value="{{ user.profile.city|default:'' }}" class="form-control" id="city" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>State</label>
+                            <input type="text" name="state" value="{{ user.profile.state|default:'' }}" class="form-control" id="state" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Pincode</label>
+                            <input type="text" name="pincode" value="{{ user.profile.pincode|default:'' }}" class="form-control" id="pincode" disabled>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions mt-4">
+                    <button type="button" class="btn btn-outline-primary" id="edit-btn" onclick="enableEditing()">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </button>
+                    <button type="submit" class="btn btn-primary ms-2" id="save-btn" disabled>
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                    <button type="button" class="btn btn-secondary ms-2" id="cancel-btn" onclick="disableEditing()" style="display: none;">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Avatar Update Modal -->
+<div id="avatarModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Profile Picture</h5>
+                <button type="button" class="btn-close" onclick="closeModal()"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data" action="{% url 'update_avatar' %}" id="avatar-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="avatarUpload" class="form-label">Choose an image (max 5MB)</label>
+                        <input class="form-control" type="file" name="avatar" id="avatarUpload" accept="image/*" required>
+                        <div class="invalid-feedback" id="avatar-feedback">
+                            Please select a valid image file (JPG, PNG, GIF)
+                        </div>
+                        <small class="text-muted">Supported formats: JPG, PNG, GIF</small>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary me-2" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="upload-btn">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Cache DOM elements
+    const profileForm = document.getElementById('profile-form');
+    const avatarForm = document.getElementById('avatar-form');
+    const avatarUpload = document.getElementById('avatarUpload');
+    const uploadBtn = document.getElementById('upload-btn');
+    const avatarFeedback = document.getElementById('avatar-feedback');
+    const saveBtn = document.getElementById('save-btn');
+    const profileAvatar = document.getElementById('profile-avatar');
+    
+    // Modal functions
+    function openModal() {
+        try {
+            const modal = new bootstrap.Modal(document.getElementById('avatarModal'));
+            modal.show();
+        } catch (error) {
+            console.error('Error opening modal:', error);
+            showAlert('danger', 'Failed to open profile picture editor');
+        }
+    }
+    
+    function closeModal() {
+        try {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('avatarModal'));
+            modal.hide();
+            avatarUpload.value = '';
+            avatarUpload.classList.remove('is-invalid');
+        } catch (error) {
+            console.error('Error closing modal:', error);
+        }
+    }
+    
+    // Avatar validation
+    avatarUpload.addEventListener('change', function(e) {
+        try {
+            const file = this.files[0];
+            
+            if (!file) {
+                this.classList.remove('is-invalid');
+                uploadBtn.disabled = true;
+                return;
+            }
+    
+            // Validate size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                avatarFeedback.textContent = 'Image must be smaller than 5MB';
+                this.classList.add('is-invalid');
+                uploadBtn.disabled = true;
+                return;
+            }
+            
+            // Validate type
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                avatarFeedback.textContent = 'Only JPG, PNG, and GIF images are allowed';
+                this.classList.add('is-invalid');
+                uploadBtn.disabled = true;
+                return;
+            }
+            
+            // Show preview before upload
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Create a temporary preview (optional)
+                const preview = document.getElementById('avatar-preview');
+                if (preview) {
+                    preview.src = e.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+            
+            this.classList.remove('is-invalid');
+            uploadBtn.disabled = false;
+        } catch (error) {
+            console.error('Error validating avatar:', error);
+            showAlert('danger', 'Error validating image');
+        }
+    });
+    
+    // Avatar form submission
+    avatarForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        try {
+            if (!avatarUpload.files.length) {
+                showAlert('danger', 'Please select an image to upload');
+                return;
+            }
+    
+            const formData = new FormData(this);
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Uploading...';
+    
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            });
+    
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Server returned unexpected response');
+            }
+    
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Avatar update failed');
+            }
+    
+            // Update the avatar image with cache busting
+            if (profileAvatar && data.avatar_url) {
+                profileAvatar.src = `${data.avatar_url}?${new Date().getTime()}`;
+            }
+            
+            showAlert('success', 'Profile picture updated successfully!');
+            closeModal();
+        } catch (error) {
+            console.error('Avatar upload error:', error);
+            showAlert('danger', error.message || 'Failed to update profile picture');
+        } finally {
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = 'Update';
+        }
+    });
+    
+    // Profile form submission
+    profileForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Validate date field first
+        const dobField = document.getElementById('dob');
+        if (dobField.value && !/^\d{4}-\d{2}-\d{2}$/.test(dobField.value)) {
+            showAlert('danger', 'Please enter date in YYYY-MM-DD format');
+            dobField.focus();
+            return;
+        }
+    
+        try {
+            const formData = new FormData(this);
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+    
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            });
+    
+            // Check response content type
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                throw new Error(`Server error: ${text.substring(0, 100)}...`);
+            }
+    
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.error || 'Profile update failed');
+            }
+    
+            showAlert('success', 'Profile updated successfully!');
+            
+            // Update displayed name if changed
+            if (data.full_name) {
+                const usernameElement = document.querySelector('.profile-username');
+                if (usernameElement) {
+                    usernameElement.textContent = data.full_name;
+                }
+            }
+            
+            disableEditing();
+        } catch (error) {
+            console.error('Profile save error:', error);
+            
+            // Special handling for date validation errors from server
+            if (error.message.includes('invalid date format') || 
+                error.message.includes('YYYY-MM-DD')) {
+                showAlert('danger', 'Invalid date format. Please use YYYY-MM-DD');
+                document.getElementById('dob').focus();
+            } else {
+                showAlert('danger', error.message.includes('Server error') 
+                    ? 'Server error occurred. Please try again.' 
+                    : error.message);
+            }
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
+        }
+    });
+    
+    // Form editing functions
+    function enableEditing() {
+        try {
+            const fields = ['first_name', 'last_name', 'phone', 'gender', 'dob', 
+                           'language', 'address', 'city', 'state', 'pincode'];
+            
+            fields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element) element.disabled = false;
+            });
+            
+            document.getElementById('save-btn').disabled = false;
+            document.getElementById('cancel-btn').style.display = 'inline-block';
+            document.getElementById('edit-btn').style.display = 'none';
+        } catch (error) {
+            console.error('Error enabling editing:', error);
+            showAlert('danger', 'Failed to enable editing mode');
+        }
+    }
+    
+    function disableEditing() {
+        try {
+            const fields = ['first_name', 'last_name', 'phone', 'gender', 'dob',
+                           'language', 'address', 'city', 'state', 'pincode'];
+            
+            fields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element) element.disabled = true;
+            });
+            
+            document.getElementById('save-btn').disabled = true;
+            document.getElementById('cancel-btn').style.display = 'none';
+            document.getElementById('edit-btn').style.display = 'inline-block';
+        } catch (error) {
+            console.error('Error disabling editing:', error);
+        }
+    }
+    
+    // Alert system
+    function showAlert(type, message) {
+        try {
+            // Remove any existing alerts
+            const existingAlerts = document.querySelectorAll('.alert-profile');
+            existingAlerts.forEach(alert => alert.remove());
+    
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show alert-profile`;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            document.body.appendChild(alertDiv);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    const bsAlert = new bootstrap.Alert(alertDiv);
+                    bsAlert.close();
+                }
+            }, 5000);
+        } catch (error) {
+            console.error('Error showing alert:', error);
+        }
+    }
+    </script>
+{% endblock %}

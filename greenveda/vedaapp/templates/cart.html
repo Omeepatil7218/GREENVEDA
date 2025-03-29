@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Medicines - GREENVEDA{% endblock %}
+
+{% block content %}
+<style>
+    .shopping-cart {
+        margin: 20px auto;
+        width: 90%;
+        max-width: 1200px;
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    table th,
+    table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+
+    table th {
+        background-color: #343a40;
+        color: #fff;
+    }
+
+    table td img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+    }
+
+    .btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        color: #fff;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .btn-success:hover,
+    .btn-warning:hover,
+    .btn-danger:hover {
+        opacity: 0.8;
+    }
+
+    .text-center {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .text-center h3 {
+        color: #343a40;
+    }
+
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #ffc107;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        margin: 0 5px;
+    }
+
+    .button:hover {
+        background-color: #e0a800;
+    }
+
+    .alert-message {
+        display: none;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .button-container {
+        margin-top: 20px;
+    }
+</style>
+
+<div class="shopping-cart">
+    {% if products %}
+    <form id="cart-form" method="POST" action="{% url 'customer_details' %}">
+        {% csrf_token %}
+        <div id="alert-message" class="alert-message">
+            Please select at least one product to proceed to checkout.
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="select-all"> Select All</th>
+                    <th>Image</th>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="selected_products" class="product-checkbox"
+                            data-total="{{ product.total }}" value="{{ product.id }}">
+                    </td>
+                    <td><img src="{{ product.image }}" alt="{{ product.name }}"></td>
+                    <td>{{ product.name }}</td>
+                    <td>₹{{ product.price }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>₹{{ product.total }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'increase_quantity' product.id %}"
+                            style="display:inline-block;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </form>
+                        <form method="POST" action="{% url 'decrease_quantity' product.id %}"
+                            style="display:inline-block;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </form>
+                        <form method="POST" action="{% url 'remove_from_cart' product.id %}"
+                            style="display:inline-block;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="checkout-section">
+            <div class="total-summary">
+                <h3 class="total-amount">Total: ₹<span id="selected-total">{{ total_cost }}</span></h3>
+                <p class="tax-note">(Inclusive of all taxes)</p>
+            </div>
+            
+            <div class="checkout-actions">
+                <button type="button" id="checkout-button" class="btn btn-primary btn-lg checkout-btn">
+                    <i class="fas fa-shopping-bag me-2"></i> Proceed to Checkout
+                </button>
+                <a href="{% url 'index' %}" class="btn btn-outline-secondary btn-lg continue-btn">
+                    <i class="fas fa-arrow-left me-2"></i> Continue Shopping
+                </a>
+            </div>
+        </div>
+        
+        <style>
+            .checkout-section {
+                background-color: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
+                margin-top: 30px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            .total-summary {
+                margin-bottom: 20px;
+                text-align: center;
+            }
+            
+            .total-amount {
+                font-size: 1.5rem;
+                color: #2c3e50;
+                font-weight: 600;
+                margin-bottom: 5px;
+            }
+            
+            .tax-note {
+                font-size: 0.85rem;
+                color: #7f8c8d;
+            }
+            
+            .checkout-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .checkout-btn {
+                background-color: #28a745;
+                border: none;
+                padding: 12px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+            
+            .checkout-btn:hover {
+                background-color: #218838;
+                transform: translateY(-2px);
+            }
+            
+            .continue-btn {
+                padding: 12px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+            }
+            
+            .continue-btn:hover {
+                background-color: #f8f9fa;
+                transform: translateY(-2px);
+            }
+            
+            @media (min-width: 768px) {
+                .checkout-actions {
+                    flex-direction: row;
+                    justify-content: center;
+                }
+                
+                .checkout-btn, .continue-btn {
+                    flex: 1;
+                    max-width: 300px;
+                }
+            }
+        </style>
+    </form>
+    {% else %}
+    <p>Your cart is empty.</p>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const selectAllCheckbox = document.getElementById("select-all");
+        const checkboxes = document.querySelectorAll(".product-checkbox");
+        const totalDisplay = document.getElementById("selected-total");
+        const checkoutButton = document.getElementById("checkout-button");
+        const alertMessage = document.getElementById("alert-message");
+        const cartForm = document.getElementById("cart-form");
+
+        function updateTotal() {
+            let selectedTotal = 0;
+            let selectedCount = 0;
+
+            checkboxes.forEach(function (cb) {
+                if (cb.checked) {
+                    selectedTotal += parseFloat(cb.dataset.total);
+                    selectedCount++;
+                }
+            });
+
+            totalDisplay.textContent = selectedTotal.toFixed(2);
+            checkoutButton.disabled = selectedCount === 0;
+        }
+
+        // "Select All" functionality
+        selectAllCheckbox.addEventListener("change", function () {
+            checkboxes.forEach(function (cb) {
+                cb.checked = selectAllCheckbox.checked;
+            });
+            updateTotal();
+        });
+
+        // Individual selection update
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener("change", function () {
+                updateTotal();
+                selectAllCheckbox.checked = Array.from(checkboxes).every(function (cb) {
+                    return cb.checked;
+                });
+            });
+        });
+
+        // Checkout button click handler
+        checkoutButton.addEventListener("click", function (e) {
+            const selectedProducts = document.querySelectorAll('.product-checkbox:checked');
+
+            if (selectedProducts.length === 0) {
+                alertMessage.style.display = 'block';
+                setTimeout(function () {
+                    alertMessage.style.display = 'none';
+                }, 3000);
+                e.preventDefault(); // Prevent form submission
+                return false;
+            } else {
+                cartForm.submit(); // Submit the form if products are selected
+            }
+        });
+
+        // Ensure the correct total is shown initially
+        updateTotal();
+    });
+</script>
+{% endblock %}

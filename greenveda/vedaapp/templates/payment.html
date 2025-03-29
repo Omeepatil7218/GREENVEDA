@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - GreenVeda{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Complete Your Payment</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <h4 class="text-primary">Total Amount To Be Paid: ₹{{ total_price }}</h4>
+                    </div>
+
+                    <form method="POST" id="paymentForm">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <h5 class="mb-3">Select Payment Method:</h5>
+                            
+                            <div class="form-check mb-3 border p-3 rounded">
+                                <input class="form-check-input" type="radio" name="payment_method" id="debitCard" value="debit_card" required onclick="toggleCardInfo('debit')">
+                                <label class="form-check-label d-flex align-items-center" for="debitCard">
+                                    <img src="{% static 'img/download (1).jpg' %}" alt="Debit Card" class="me-3" style="height: 24px;">
+                                    Debit Card
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3 border p-3 rounded">
+                                <input class="form-check-input" type="radio" name="payment_method" id="creditCard" value="credit_card" onclick="toggleCardInfo('credit')">
+                                <label class="form-check-label d-flex align-items-center" for="creditCard">
+                                    <img src="{% static 'img/download.jpg' %}" alt="Credit Card" class="me-3" style="height: 24px;">
+                                    Credit Card
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3 border p-3 rounded">
+                                <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" onclick="toggleCardInfo('cod')">
+                                <label class="form-check-label d-flex align-items-center" for="cod">
+                                    <img src="{% static 'img/download (2).jpg' %}" alt="Cash on Delivery" class="me-3" style="height: 24px;">
+                                    Cash on Delivery
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Card Information Section -->
+                        <div id="debit-card-info" class="card-info mb-4 p-3 border rounded" style="display: none;">
+                            <div class="mb-3">
+                                <label for="debit_card_number" class="form-label">Debit Card Number:</label>
+                                <input type="text" class="form-control" id="debit_card_number" name="debit_card_number" placeholder="Enter your 16-digit debit card number" maxlength="16" pattern="\d{16}">
+                            </div>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="debit_expiry_month" class="form-label">Expiry Month:</label>
+                                    <input type="text" class="form-control" id="debit_expiry_month" name="debit_expiry_month" placeholder="MM" maxlength="2" pattern="\d{2}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="debit_expiry_year" class="form-label">Expiry Year:</label>
+                                    <input type="text" class="form-control" id="debit_expiry_year" name="debit_expiry_year" placeholder="YY" maxlength="2" pattern="\d{2}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="debit_cvv" class="form-label">CVV:</label>
+                                    <input type="text" class="form-control" id="debit_cvv" name="debit_cvv" placeholder="CVV" maxlength="3" pattern="\d{3}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="credit-card-info" class="card-info mb-4 p-3 border rounded" style="display: none;">
+                            <div class="mb-3">
+                                <label for="credit_card_number" class="form-label">Credit Card Number:</label>
+                                <input type="text" class="form-control" id="credit_card_number" name="credit_card_number" placeholder="Enter your 16-digit credit card number" maxlength="16" pattern="\d{16}">
+                            </div>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="credit_expiry_month" class="form-label">Expiry Month:</label>
+                                    <input type="text" class="form-control" id="credit_expiry_month" name="credit_expiry_month" placeholder="MM" maxlength="2" pattern="\d{2}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="credit_expiry_year" class="form-label">Expiry Year:</label>
+                                    <input type="text" class="form-control" id="credit_expiry_year" name="credit_expiry_year" placeholder="YY" maxlength="2" pattern="\d{2}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="credit_cvv" class="form-label">CVV:</label>
+                                    <input type="text" class="form-control" id="credit_cvv" name="credit_cvv" placeholder="CVV" maxlength="3" pattern="\d{3}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'index' %}" class="btn btn-outline-secondary">Back to Home</a>
+                            <button type="submit" class="btn btn-success" id="submitButton" formaction="{% url 'paymentconfirm' %}">Proceed to Checkout</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleCardInfo(paymentMethod) {
+        const debitCardInfo = document.getElementById('debit-card-info');
+        const creditCardInfo = document.getElementById('credit-card-info');
+        
+        if (paymentMethod === 'debit') {
+            debitCardInfo.style.display = 'block';
+            creditCardInfo.style.display = 'none';
+        } else if (paymentMethod === 'credit') {
+            debitCardInfo.style.display = 'none';
+            creditCardInfo.style.display = 'block';
+        } else {
+            debitCardInfo.style.display = 'none';
+            creditCardInfo.style.display = 'none';
+        }
+    }
+
+    document.getElementById('paymentForm').addEventListener('submit', function(event) {
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+        const debitCardNumber = document.getElementById('debit_card_number');
+        const debitExpiryMonth = document.getElementById('debit_expiry_month');
+        const debitExpiryYear = document.getElementById('debit_expiry_year');
+        const debitCvv = document.getElementById('debit_cvv');
+        const creditCardNumber = document.getElementById('credit_card_number');
+        const creditExpiryMonth = document.getElementById('credit_expiry_month');
+        const creditExpiryYear = document.getElementById('credit_expiry_year');
+        const creditCvv = document.getElementById('credit_cvv');
+
+        if (!paymentMethod) {
+            alert('Please choose a payment method before proceeding.');
+            event.preventDefault();
+            return;
+        }
+
+        if (paymentMethod.value === 'debit_card' || paymentMethod.value === 'credit_card') {
+            const cardNumber = paymentMethod.value === 'debit_card' ? debitCardNumber : creditCardNumber;
+            const expiryMonth = paymentMethod.value === 'debit_card' ? debitExpiryMonth : creditExpiryMonth;
+            const expiryYear = paymentMethod.value === 'debit_card' ? debitExpiryYear : creditExpiryYear;
+            const cvv = paymentMethod.value === 'debit_card' ? debitCvv : creditCvv;
+
+            if (!cardNumber.value || !expiryMonth.value || !expiryYear.value || !cvv.value) {
+                alert('Please fill out all card details.');
+                event.preventDefault();
+                return;
+            }
+
+            if (!/^\d{16}$/.test(cardNumber.value)) {
+                alert('Card number must be 16 digits.');
+                event.preventDefault();
+                return;
+            }
+
+            if (!/^\d{2}$/.test(expiryMonth.value) || parseInt(expiryMonth.value) < 1 || parseInt(expiryMonth.value) > 12) {
+                alert('Expiry month must be a valid month (01-12).');
+                event.preventDefault();
+                return;
+            }
+
+            const currentYear = new Date().getFullYear() % 100;
+            if (!/^\d{2}$/.test(expiryYear.value) || parseInt(expiryYear.value) < currentYear) {
+                alert('Expiry year must be valid and greater than or equal to the current year.');
+                event.preventDefault();
+                return;
+            }
+
+            if (!/^\d{3}$/.test(cvv.value)) {
+                alert('CVV must be a 3-digit number.');
+                event.preventDefault();
+            }
+        }
+    });
+</script>
+
+<style>
+    .card-info {
+        background-color: #f8f9fa;
+    }
+    
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .form-check {
+        transition: all 0.2s ease;
+    }
+    
+    .form-check:hover {
+        background-color: #f1f1f1;
+    }
+</style>
+{% endblock %}

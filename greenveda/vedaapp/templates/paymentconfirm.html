@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment Successful - GreenVeda{% endblock %}
+
+{% block content %}
+
+<div style="margin-top: 100px;"></div>
+
+<div class="particles">
+    {% for i in "xxxxxxxxxxxxxxxxxx" %}
+    <div class="particle"></div>
+    {% endfor %}
+</div>
+
+<div class="success-container">
+    <div class="success-card animate__animated animate__zoomIn">
+        <div class="success-icon animate__animated animate__bounceIn">
+            <div class="icon-glow"></div>
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+        </div>
+        
+        <h1 class="animate__animated animate__fadeInUp">Order Successfully Placed!</h1>
+        <p class="animate__animated animate__fadeInUp animate__delay-1s">
+            Thank you for your purchase! Your transaction has been completed successfully.
+        </p>
+
+        <div class="success-actions animate__animated animate__fadeInUp animate__delay-2s">
+            <a href="/" class="btn btn-primary btn-glow">
+                <i class="fas fa-home me-2"></i>Return Home
+            </a>
+            <a href="{% url 'products' %}" class="btn btn-outline-primary">
+                <i class="fas fa-shopping-bag me-2"></i>Shop More
+            </a>
+        </div>
+    </div>
+    <div class="confetti-container"></div>
+</div>
+
+<style>
+/* ✅ Ensure the Navbar is Fixed Properly */
+.navbar {
+    z-index: 1000;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 75px;  /* ✅ Adjusted Height */
+    background: rgba(0, 0, 0, 0.95); /* ✅ Dark Transparent Background */
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+}
+
+/* ✅ Prevent Navbar Overlapping */
+body {
+    padding-top: 85px; /* ✅ Ensures content starts below navbar */
+}
+
+/* Floating Particles */
+.particles {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    pointer-events: none; /* ✅ Prevent interaction issues */
+}
+
+.particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: float 10s ease-in-out infinite;
+}
+
+/* ✅ Fix Success Container */
+.success-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5rem 2rem;
+    position: relative;
+    z-index: 1;
+    margin-top: -50px; /* ✅ Prevent Overlap with Navbar */
+    overflow: hidden; /* Prevent confetti overflow */
+}
+
+/* ✅ Fix Confetti & Effects */
+.success-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+}
+
+/* ✅ Animated Checkmark */
+.success-icon {
+    margin: 0 auto 1.5rem;
+    width: 100px;
+    height: 100px;
+}
+
+.checkmark__circle, .checkmark__check {
+    stroke: #4CAF50;
+    fill: none;
+    stroke-width: 3;
+    animation: stroke 0.8s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+/* ✅ Glow Effect for Buttons */
+.btn-glow {
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 30px;
+    background: linear-gradient(90deg, #4CAF50, #2196F3);
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+}
+
+.btn-glow:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.6);
+}
+
+@keyframes stroke {
+    100% { stroke-dashoffset: 0; }
+}
+
+/* Confetti Styles */
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.confetti-particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    animation: confetti-fall 3s linear infinite;
+}
+
+@keyframes confetti-fall {
+    0% {
+        opacity: 0;
+        transform: translateY(-100px) rotate(0deg);
+    }
+    10% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);
+    }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const confettiContainer = document.querySelector('.confetti-container');
+
+    if (confettiContainer) {
+        for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti-particle';
+            confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            confetti.style.left = `${Math.random() * 100}%`;
+            confetti.style.animationDelay = `${Math.random() * 3}s`;
+            confettiContainer.appendChild(confetti);
+        }
+    }
+});
+</script>
+
+{% endblock %}
